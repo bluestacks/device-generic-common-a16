@@ -19,9 +19,6 @@ PRODUCT_COPY_FILES := \
     $(LOCAL_PATH)/OEMWhiteList:$(TARGET_COPY_OUT_VENDOR)/etc/misc/.OEMWhiteList \
     $(LOCAL_PATH)/ThirdPartySO:$(TARGET_COPY_OUT_VENDOR)/etc/misc/.ThirdPartySO \
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.dalvik.vm.isa.arm=x86 \
-    ro.enable.native.bridge.exec=1 \
 
 ifeq ($(TARGET_SUPPORTS_64_BIT_APPS),true)
 PRODUCT_PROPERTY_OVERRIDES += \
