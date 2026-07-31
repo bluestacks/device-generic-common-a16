@@ -18,17 +18,4 @@
             <instance>default</instance>
         </interface>
     </hal>
-    <hal format="hidl">
-        <!-- Phase2 P0 formal 2026-07-20: device-side IServiceManager so
-             hwservicemanager getTransport finds HWBINDER even when framework
-             manifest entry is filtered/missing (cont.9: target-level=8 alone
-             insufficient). getTransport checks framework then device. -->
-        <name>android.hidl.manager</name>
-        <transport>hwbinder</transport>
-        <version>1.2</version>
-        <interface>
-            <name>IServiceManager</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
 </manifest>
