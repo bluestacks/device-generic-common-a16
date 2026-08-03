@@ -11,7 +11,9 @@
 WITH_NATIVE_BRIDGE := true
 
 # Native Bridge ABI List
-NATIVE_BRIDGE_ABI_LIST_32_BIT := armeabi-v7a armeabi
+# The Android 16 Houdini package and the bundled NDK translation payload are
+# both arm64-only. Do not advertise an arm32 translator that is not installed.
+NATIVE_BRIDGE_ABI_LIST_32_BIT :=
 NATIVE_BRIDGE_ABI_LIST_64_BIT := arm64-v8a
 
 PRODUCT_COPY_FILES := \
@@ -26,7 +28,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 ifeq ($(TARGET_SUPPORTS_64_BIT_APPS),true)
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.dalvik.vm.isa.arm64=x86_64 \
-    ro.enable.native.bridge.exec64=1
+    ro.enable.native.bridge.exec64=1 \
+    ro.vendor.enable.native.bridge.exec64=1
 endif
 
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -36,5 +39,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     ro.dalvik.vm.native.bridge=libnb.so
 
-PRODUCT_PACKAGES := libnb
+# libnb preserves the A13 per-app translator selection and compatibility hooks;
+# houdini64 installs the licensed Android 16 translator payload.
+PRODUCT_PACKAGES += libnb houdini64
 

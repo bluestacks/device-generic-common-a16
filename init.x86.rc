@@ -2,6 +2,7 @@ import /init.superuser.rc
 
 on early-init
     write /proc/sys/kernel/ctrl-alt-del 1
+    mount binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
 
     write /sys/module/xt_qtaguid/parameters/ctrl_write_limited N
 
@@ -110,3 +111,8 @@ on property:persist.sys.nativebridge=1
 
 on property:persist.sys.nativebridge=0
     #stop nativebridge
+
+on property:ro.dalvik.vm.native.bridge=libnb.so
+    copy /system/etc/houdini/binfmt_misc/arm64_exe /proc/sys/fs/binfmt_misc/register
+    copy /system/etc/houdini/binfmt_misc/arm64_dyn /proc/sys/fs/binfmt_misc/register
+    mount none /system/lib64/houdini/arm64 /system/lib64/arm64 bind rec
