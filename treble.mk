@@ -7,8 +7,7 @@ PRODUCT_PACKAGES += \
 
 # HWComposer HAL
 PRODUCT_PACKAGES += \
-    android.hardware.graphics.composer@2.1-service \
-    android.hardware.graphics.composer@2.1-service.drmfb
+    android.hardware.graphics.composer@2.1-service
 
 # Audio HAL
 PRODUCT_PACKAGES += \
@@ -19,7 +18,7 @@ PRODUCT_PACKAGES += \
 
 # Bluetooth HAL
 PRODUCT_PACKAGES += \
-    android.hardware.bluetooth@1.0-service.btlinux
+    android.hardware.bluetooth-service.default
 
 # Camera HAL
 PRODUCT_PACKAGES += \
@@ -29,13 +28,12 @@ PRODUCT_PACKAGES += \
 
 # Media codec
 PRODUCT_PACKAGES += \
-    android.hardware.media.c2@1.0-service \
+    com.android.media.swcodec \
     android.hardware.media.omx@1.0-service
 
 # DumpState HAL
 PRODUCT_PACKAGES += \
-    android.hardware.dumpstate@1.0-impl \
-    android.hardware.dumpstate@1.0-service.example
+    android.hardware.dumpstate-service.example
 
 # Gatekeeper HAL
 #PRODUCT_PACKAGES += \
@@ -57,9 +55,7 @@ PRODUCT_PACKAGES += \
 
 # Memtrack HAL
 PRODUCT_PACKAGES += \
-    memtrack.default \
-    android.hardware.memtrack@1.0-impl \
-    android.hardware.memtrack@1.0-service
+    com.android.hardware.memtrack
 
 # Power HAL
 PRODUCT_PACKAGES += \
@@ -82,13 +78,12 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.drm@1.0-impl \
     android.hardware.drm@1.0-service \
-    android.hardware.drm@1.4-service.clearkey \
+    android.hardware.drm-service.clearkey \
     android.hardware.drm@1.3-service.widevine
 
 # GPS HAL
 PRODUCT_PACKAGES += \
-    android.hardware.gnss@1.0-impl \
-    android.hardware.gnss@1.0-service
+    com.android.hardware.gnss
 
 # ConfigStore HAL
 PRODUCT_PACKAGES += \
