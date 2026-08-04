@@ -47,6 +47,7 @@ PRODUCT_PACKAGES := \
     sshd \
     su \
     v86d \
+    xmllint \
     pagefusion
 
 PRODUCT_PACKAGES += \
