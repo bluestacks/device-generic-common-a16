@@ -76,12 +76,12 @@ PRODUCT_PACKAGES += \
     hciconfig \
     hcitool \
 
-# Stagefright FFMPEG plugins (A16 需 libva/链接适配，打 ISO 时先关闭)
-# PRODUCT_PACKAGES += \
-#     i965_drv_video \
-#     libffmpeg_extractor \
-#     libffmpeg_omx \
-#     media_codecs_ffmpeg.xml
+# Stagefright FFMPEG plugins
+PRODUCT_PACKAGES += \
+    i965_drv_video \
+    libffmpeg_extractor \
+    libffmpeg_omx \
+    media_codecs_ffmpeg.xml
 
 # BS-A16: Use com.uncube.launcher3 as default home app.
 # Remove AOSP Launcher3 to avoid HOME activity conflict on first boot.
@@ -120,4 +120,3 @@ PRODUCT_HOST_PACKAGES := \
 PRODUCT_PACKAGES_DEBUG := \
     com.bluestacks.BstCommandProcessor \
     com.bluestacks.settings \
-
