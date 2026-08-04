@@ -58,6 +58,7 @@ PRODUCT_PACKAGES += \
     wpa_supplicant.conf \
 
 PRODUCT_PACKAGES += \
+    badblocks \
     e2fsck \
     fsck.exfat \
     fsck.f2fs \
