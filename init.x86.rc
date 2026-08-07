@@ -37,6 +37,11 @@ on post-fs-data
     # Set indication (checked by vold) that we have finished this action
     setprop vold.post_fs_data_done 1
 
+# The host-generated guest property files become visible during the external
+# data setup. Reload once after Android's first persistent-property pass.
+on load_persist_props_action
+    load_persist_props
+
 on boot
     # merge from system.prop
     #setprop ro.config.sync yes
