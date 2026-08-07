@@ -38,7 +38,12 @@ $(info "build kernel with clang")
 KERNEL_CLANG_CLAGS += CC=$(abspath $(LLVM_PREBUILTS_PATH)/clang) LD=$(abspath $(LLVM_PREBUILTS_PATH)/ld.lld) CLANG_TRIPLE=x86_64-linux-gnu-
 endif
 
-KBUILD_JOBS := $(shell echo $$((1-(`cat /sys/devices/system/cpu/present`))))
+BST_BUILD_JOBS ?= 8
+ifneq ($(filter $(BST_BUILD_JOBS),1 2 3 4 5 6 7 8),)
+KBUILD_JOBS := $(BST_BUILD_JOBS)
+else
+$(error BST_BUILD_JOBS must be an integer from 1 through 8)
+endif
 
 mk_kernel := + prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/make -j$(KBUILD_JOBS) \
 	AR=$(abspath $(LLVM_PREBUILTS_PATH)/llvm-ar) \
