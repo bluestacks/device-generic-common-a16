@@ -29,7 +29,7 @@ KBUILD_OUTPUT := $(TARGET_OUT_INTERMEDIATES)/kernel
 KERNEL_HOST_GCC := /usr/bin/gcc
 KERNEL_HOST_GXX := /usr/bin/g++
 KERNEL_HOST_FLAGS := HOSTCC=$(KERNEL_HOST_GCC) HOSTCXX=$(KERNEL_HOST_GXX) HOSTLD=$(KERNEL_HOST_GCC)
-KERNEL_BUILD_PATH := /usr/bin:/bin:/sbin
+KERNEL_BUILD_PATH := prebuilts/rust/linux-x86/1.88.0/bin:prebuilts/clang-tools/linux-x86/bin:/usr/bin:/bin:/sbin
 KERNEL_CLANG_CLAGS := $(KERNEL_HOST_FLAGS)
 ifeq ($(BUILD_KERNEL_WITH_CLANG),true)
 $(info "build kernel with clang")
@@ -50,7 +50,7 @@ mk_kernel := + prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/make -j$(KBUILD_JO
 	YACC=prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/bison \
 	LEX=prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/flex \
 	M4=prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/m4 DEPMOD=/sbin/depmod \
-	PATH=$(KERNEL_BUILD_PATH):$$PATH  \
+	PATH=$(KERNEL_BUILD_PATH):$$PATH LIBCLANG_PATH=$(patsubst %/bin,%/lib,$(LLVM_PREBUILTS_PATH)) \
 	$(KERNEL_CLANG_CLAGS)
 
 bk_kernel := + prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/make -j$(KBUILD_JOBS)  CC=$(abspath $(LLVM_PREBUILTS_PATH)/clang) \
@@ -66,7 +66,7 @@ bk_kernel := + prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/make -j$(KBUILD_JO
 	YACC=prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/bison \
 	LEX=prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/flex \
 	M4=prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/m4 DEPMOD=/sbin/depmod \
-	PATH=$(KERNEL_BUILD_PATH):$$PATH \
+	PATH=$(KERNEL_BUILD_PATH):$$PATH LIBCLANG_PATH=$(patsubst %/bin,%/lib,$(LLVM_PREBUILTS_PATH)) \
 	$(KERNEL_CLANG_CLAGS)
 
 KERNEL_CONFIG_FILE := $(if $(wildcard $(TARGET_KERNEL_CONFIG)),$(TARGET_KERNEL_CONFIG),$(KERNEL_DIR)/$(KERNEL_CONFIG_DIR)/$(TARGET_KERNEL_CONFIG))
