@@ -86,6 +86,13 @@ FIRMWARE_ENABLED := $(shell grep ^CONFIG_FIRMWARE_IN_KERNEL=y $(KERNEL_CONFIG_FI
 # but I don't want to write a complex Android.mk to build kernel.
 # This is the simplest way I can think.
 KERNEL_DOTCONFIG_FILE := $(KBUILD_OUTPUT)/.config
+KERNEL_SOURCE_REVISION := $(shell git -C $(KERNEL_DIR) rev-parse HEAD 2>/dev/null)
+KERNEL_SOURCE_STAMP := $(KBUILD_OUTPUT)/.source-$(KERNEL_SOURCE_REVISION)
+$(KERNEL_SOURCE_STAMP):
+	mkdir -p $(@D)
+	rm -f $(KBUILD_OUTPUT)/.source-*
+	touch $@
+
 ifneq ($(filter 0,$(shell grep -s ^$(if $(filter x86,$(TARGET_KERNEL_ARCH)),\#.)CONFIG_64BIT $(KERNEL_DOTCONFIG_FILE) | wc -l)),)
 KERNEL_ARCH_CHANGED := $(KERNEL_DOTCONFIG_FILE)-
 $(KERNEL_ARCH_CHANGED):
@@ -100,7 +107,7 @@ $(KERNEL_DOTCONFIG_FILE): $(KERNEL_CONFIG_FILE) $(wildcard $(TARGET_KERNEL_DIFFC
 	$(info debug-> mk_kernel: $(mk_kernel))
 	$(info debug-> LLVM_PREBUILTS_PATH: $(LLVM_PREBUILTS_PATH))
 BUILT_KERNEL_TARGET := $(KBUILD_OUTPUT)/arch/$(KERNEL_MAKE_ARCH)/boot/$(KERNEL_TARGET)
-$(BUILT_KERNEL_TARGET): $(KERNEL_DOTCONFIG_FILE)
+$(BUILT_KERNEL_TARGET): $(KERNEL_DOTCONFIG_FILE) $(KERNEL_SOURCE_STAMP)
 	# A dirty hack to use ar & ld
 	$(hide) mkdir -p $(OUT_DIR)/.path; ln -sf ../../$(LLVM_PREBUILTS_PATH)/llvm-ar $(OUT_DIR)/.path/ar; ln -sf ../../$(LLVM_PREBUILTS_PATH)/ld.lld $(OUT_DIR)/.path/ld
 ifeq ($(BUILD_KERNEL_WITH_CLANG),true)
