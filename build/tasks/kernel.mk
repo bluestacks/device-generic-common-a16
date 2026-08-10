@@ -113,6 +113,13 @@ endif
 	$(bk_kernel) $(KERNEL_TARGET) $(if $(MOD_ENABLED),modules)
 	$(if $(FIRMWARE_ENABLED),$(bk_kernel) INSTALL_MOD_PATH=$(abspath $(TARGET_OUT)) firmware_install)
 
+# The app-player fastboot flow builds VBox and HD modules against KBUILD_OUTPUT.
+# Keep the generated configuration complete even when the kernel image itself
+# is already up to date after an incremental source promotion.
+KERNEL_EXTERNAL_MODULE_CONFIG := $(KBUILD_OUTPUT)/include/generated/rustc_cfg
+$(KERNEL_EXTERNAL_MODULE_CONFIG): $(BUILT_KERNEL_TARGET)
+	$(mk_kernel) olddefconfig prepare
+
 ifneq ($(MOD_ENABLED),)
 KERNEL_MODULES_DEP := $(firstword $(wildcard $(TARGET_OUT)/lib/modules/*/modules.dep))
 KERNEL_MODULES_DEP := $(if $(KERNEL_MODULES_DEP),$(KERNEL_MODULES_DEP),$(TARGET_OUT)/lib/modules)
@@ -143,7 +150,7 @@ kernel: $(INSTALLED_KERNEL_TARGET) $(KERNEL_MODULES_DEP)
 endif # TARGET_PREBUILT_KERNEL
 
 ifndef LINEAGE_BUILD
-$(INSTALLED_KERNEL_TARGET): $(TARGET_PREBUILT_KERNEL) | $(ACP)
+$(INSTALLED_KERNEL_TARGET): $(TARGET_PREBUILT_KERNEL) $(KERNEL_EXTERNAL_MODULE_CONFIG) | $(ACP)
 	$(copy-file-to-new-target)
 ifdef TARGET_PREBUILT_MODULES
 	mkdir -p $(TARGET_OUT)/lib
