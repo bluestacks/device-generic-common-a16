@@ -27,11 +27,19 @@ KTOOLS := prebuilts/ktools
 KERN_BUILD_TOOLS_BIN := $(KTOOLS)/kernel-build-tools/linux-x86/bin
 KBUILD_OUTPUT := $(TARGET_OUT_INTERMEDIATES)/kernel
 
+KERNEL_RUST_PREBUILT := prebuilts/rust/linux-x86/1.88.0
+KERNEL_BINDGEN_PREBUILT := prebuilts/clang-tools/linux-x86
+KERNEL_RUST_FLAGS := \
+	RUSTC=$(abspath $(KERNEL_RUST_PREBUILT)/bin/rustc) \
+	BINDGEN=$(abspath $(KERNEL_BINDGEN_PREBUILT)/bin/bindgen) \
+	LIBCLANG_PATH=$(abspath $(LLVM_PREBUILTS_PATH)/../lib) \
+	RUST_LIB_SRC=$(abspath $(KERNEL_RUST_PREBUILT)/lib/rustlib/src/rust/library)
+
 # 宿主机脚本(fixdep 等)：须用绝对路径（ninja 子进程 PATH 不含 /usr/bin）
 KERNEL_HOST_GCC := /usr/bin/gcc
 KERNEL_HOST_GXX := /usr/bin/g++
 KERNEL_HOST_FLAGS := HOSTCC=$(KERNEL_HOST_GCC) HOSTCXX=$(KERNEL_HOST_GXX) HOSTLD=$(KERNEL_HOST_GCC)
-KERNEL_BUILD_PATH := /usr/bin:/bin:/sbin:$(KERN_BUILD_TOOLS_BIN)
+KERNEL_BUILD_PATH := $(abspath $(KERNEL_RUST_PREBUILT)/bin):$(abspath $(KERNEL_BINDGEN_PREBUILT)/bin):/usr/bin:/bin:/sbin:$(KERN_BUILD_TOOLS_BIN)
 KERNEL_CLANG_CLAGS := $(KERNEL_HOST_FLAGS)
 ifeq ($(BUILD_KERNEL_WITH_CLANG),true)
 $(info "build kernel with clang")
@@ -58,6 +66,7 @@ mk_kernel := + prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/make -j$(KBUILD_JO
 	LEX=prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/flex \
 	M4=prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/m4 DEPMOD=/sbin/depmod \
 	PATH=$(KERNEL_BUILD_PATH):$$PATH  \
+	$(KERNEL_RUST_FLAGS) \
 	$(KERNEL_CLANG_CLAGS)
 
 bk_kernel := + prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/make -j$(KBUILD_JOBS)  CC=$(abspath $(LLVM_PREBUILTS_PATH)/clang) \
@@ -74,6 +83,7 @@ bk_kernel := + prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/make -j$(KBUILD_JO
 	LEX=prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/flex \
 	M4=prebuilts/build-tools/$(HOST_PREBUILT_TAG)/bin/m4 DEPMOD=/sbin/depmod \
 	PATH=$(KERNEL_BUILD_PATH):$$PATH \
+	$(KERNEL_RUST_FLAGS) \
 	$(KERNEL_CLANG_CLAGS)
 
 KERNEL_CONFIG_FILE := $(if $(wildcard $(TARGET_KERNEL_CONFIG)),$(TARGET_KERNEL_CONFIG),$(KERNEL_DIR)/$(KERNEL_CONFIG_DIR)/$(TARGET_KERNEL_CONFIG))
