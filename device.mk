@@ -24,7 +24,6 @@ PRODUCT_PROPERTY_OVERRIDES := \
     media.sf.hwaccel=1 \
     media.sf.omx-plugin=libffmpeg_omx.so \
     media.sf.extractor-plugin= \
-    debug.stagefright.ccodec=0 \
     debug.stagefright.omx_default_rank.sw-audio=1 \
     debug.stagefright.omx_default_rank=0 \
     ro.lmk.kill_timeout_ms=100
