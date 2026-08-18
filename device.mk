@@ -110,6 +110,9 @@ $(call inherit-product-if-exists,external/tslib/tslib.mk)
 
 # Get the alsa files
 $(call inherit-product-if-exists,hardware/bst/audio/alsa.mk)
+# BS-A16: run the vendor audio HAL service 64-bit (like camera provider);
+# audio.primary.bst is a vendor module, 64-bit only
+$(call soong_config_set, android_hardware_audio, run_64bit, true)
 
 # Get GPS configuration
 #$(call inherit-product-if-exists,device/common/gps/gps_as.mk)
