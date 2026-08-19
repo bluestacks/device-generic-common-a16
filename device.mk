@@ -47,6 +47,7 @@ PRODUCT_COPY_FILES := \
     $(if $(wildcard $(PRODUCT_DIR)ueventd.$(TARGET_PRODUCT).rc),$(PRODUCT_DIR)ueventd.$(TARGET_PRODUCT).rc,$(LOCAL_PATH)/ueventd.x86.rc):root/ueventd.baklava.rc \
     $(call find-copy-subdir-files,*,device/generic/common/libndk_baklava64/lib64/arm64,$(TARGET_COPY_OUT_SYSTEM)/lib64/arm64_ndk) \
     $(call find-copy-subdir-files,libndk_translation*,device/generic/common/libndk_baklava64/lib64,$(TARGET_COPY_OUT_SYSTEM)/lib64) \
+    $(call find-copy-subdir-files,libberberis_exec_region.so,device/generic/common/libndk_baklava64/lib64,$(TARGET_COPY_OUT_SYSTEM)/lib64) \
     $(call find-copy-subdir-files,*,device/generic/common/libndk_baklava64/etc,$(TARGET_COPY_OUT_SYSTEM)/etc) \
     $(call find-copy-subdir-files,*,device/generic/common/libndk_baklava64/bin/arm64,$(TARGET_COPY_OUT_SYSTEM)/bin/arm64)
 
