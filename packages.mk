@@ -52,6 +52,8 @@ PRODUCT_PACKAGES := \
 
 PRODUCT_PACKAGES += \
     libwpa_client \
+    liboemcrypto \
+    libwvdrmengine \
     hostapd \
     wificond \
     wpa_supplicant \
