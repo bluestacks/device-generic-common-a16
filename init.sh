@@ -37,8 +37,10 @@ function init_hal_gralloc()
 {
 	[ "$VULKAN" = "1" ] && GRALLOC=gbm
 
-	[ -z "$(getprop ro.hardware.gralloc)" ] && set_property ro.hardware.gralloc bst
-	[ -z "$(getprop ro.hardware.egl)" ] && set_property ro.hardware.egl emulation
+	# BS-A16: do not export ro.hardware.gralloc=bst / ro.hardware.egl=emulation
+	# system-wide; they leak the custom HALs to Play Integrity device
+	# fingerprinting (A13 leaves them unset). The gralloc HAL resolves via
+	# libhardware's explicit "bst" fallback and egl via mesa's own lookup.
 	[ -n "$DEBUG" ] && set_property debug.egl.trace error
 }
 
