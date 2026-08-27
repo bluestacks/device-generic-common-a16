@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<permissions>
+    <!-- BS-A16: upstream dropped this declaration file; the base telephony
+         feature is required for Play device compatibility. -->
+    <feature name="android.hardware.telephony" />
+</permissions>
