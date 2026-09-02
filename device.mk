@@ -29,7 +29,6 @@ PRODUCT_PROPERTY_OVERRIDES := \
     ro.lmk.kill_timeout_ms=100
 
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES := \
-    ro.arch=x86 \
     persist.rtc_local_time=1 \
     ro.logd.size=1M \
     logd.logpersistd=logcatd \
