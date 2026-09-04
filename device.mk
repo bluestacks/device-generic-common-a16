@@ -171,6 +171,12 @@ $(call inherit-product,frameworks/native/build/tablet-10in-xhdpi-2048-dalvik-hea
 GAPPS_VARIANT ?= pico
 $(call inherit-product-if-exists,$(if $(wildcard vendor/google/products/gms.mk),vendor/google/products/gms.mk,vendor/opengapps/build/opengapps-packages.mk))
 
+# BST: ship apexes uncompressed so apexd does not decompress ~200MB to
+# /data on first boot (saves ~3.3s warm, ~15s after a cold host page cache).
+# Image grows ~55MB. The initrd loop-mounts of com.android.runtime/i18n
+# already expect uncompressed .apex files, so nothing else changes.
+PRODUCT_COMPRESSED_APEX := false
+
 # Get native bridge settings
 $(call inherit-product-if-exists,$(LOCAL_PATH)/nativebridge/nativebridge.mk)
 
