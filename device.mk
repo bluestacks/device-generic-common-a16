@@ -181,3 +181,14 @@ PRODUCT_COMPRESSED_APEX := false
 $(call inherit-product-if-exists,$(LOCAL_PATH)/nativebridge/nativebridge.mk)
 
 $(call inherit-product,$(if $(wildcard $(PRODUCT_DIR)packages.mk),$(PRODUCT_DIR),$(LOCAL_PATH)/)packages.mk)
+
+# A16 first-boot blackscreen: 'quicken' is an obsolete alias for 'verify' in
+# ART16, so the soong default produced verify-only odex for every prebuilt app
+# and the whole system JIT'd on first boot (minutes of black screen on slow
+# machines). Compile prebuilt apps with real AOT code instead.
+PRODUCT_DEX_PREOPT_DEFAULT_COMPILER_FILTER := speed
+
+# SystemUI java optimization: unset = conditions_default = no R8 shrink, which
+# balloons the dex (140MB concatenated container, 167MB apk, 214MB odex) and
+# first-boot cold-IO dominates SystemUI startup (28s first vs 8s second boot).
+SOONG_CONFIG_ANDROID_SYSTEMUI_OPTIMIZE_JAVA := true
