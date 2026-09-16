@@ -127,4 +127,11 @@
 
     <!-- Preserve the A13 BlueStacks NTP refresh cadence using the A16 polling engine. -->
     <integer name="config_ntpPollingInterval">1800000</integer>
+    <!-- Android 16 desktop windowing: the guest is a large-screen device and all
+         instances share this image, so enable desktop sessions unconditionally.
+         This lets apps run in movable/resizable freeform windows (BST launcher
+         exposes a long-press "open in window" entry). -->
+    <bool name="config_isDesktopModeSupported">true</bool>
+    <bool name="config_canInternalDisplayHostDesktops">true</bool>
+    <bool name="config_showHomeBehindDesktop">true</bool>
 </resources>
