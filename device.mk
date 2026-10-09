@@ -43,12 +43,17 @@ PRODUCT_COPY_FILES := \
     $(if $(wildcard $(PRODUCT_DIR)wpa_supplicant_overlay.conf),$(PRODUCT_DIR),$(LOCAL_PATH)/)wpa_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant_overlay.conf \
     $(if $(wildcard $(PRODUCT_DIR)excluded-input-devices.xml),$(PRODUCT_DIR),$(LOCAL_PATH)/)excluded-input-devices.xml:system/etc/excluded-input-devices.xml \
     $(if $(wildcard $(PRODUCT_DIR)init.$(TARGET_PRODUCT).rc),$(PRODUCT_DIR)init.$(TARGET_PRODUCT).rc,$(LOCAL_PATH)/init.x86.rc):root/init.baklava.rc \
-    $(if $(wildcard $(PRODUCT_DIR)ueventd.$(TARGET_PRODUCT).rc),$(PRODUCT_DIR)ueventd.$(TARGET_PRODUCT).rc,$(LOCAL_PATH)/ueventd.x86.rc):root/ueventd.baklava.rc \
+    $(if $(wildcard $(PRODUCT_DIR)ueventd.$(TARGET_PRODUCT).rc),$(PRODUCT_DIR)ueventd.$(TARGET_PRODUCT).rc,$(LOCAL_PATH)/ueventd.x86.rc):root/ueventd.baklava.rc
+
+# BS-A16: ndk_translation blobs are x86-only (arm64 guests run arm apps natively).
+ifeq ($(filter x86 x86_64,$(TARGET_ARCH)),)
+PRODUCT_COPY_FILES += \
     $(call find-copy-subdir-files,*,device/generic/common/libndk_baklava64/lib64/arm64,$(TARGET_COPY_OUT_SYSTEM)/lib64/arm64_ndk) \
     $(call find-copy-subdir-files,libndk_translation*,device/generic/common/libndk_baklava64/lib64,$(TARGET_COPY_OUT_SYSTEM)/lib64) \
     $(call find-copy-subdir-files,libberberis_exec_region.so,device/generic/common/libndk_baklava64/lib64,$(TARGET_COPY_OUT_SYSTEM)/lib64) \
     $(call find-copy-subdir-files,*,device/generic/common/libndk_baklava64/etc,$(TARGET_COPY_OUT_SYSTEM)/etc) \
     $(call find-copy-subdir-files,*,device/generic/common/libndk_baklava64/bin/arm64,$(TARGET_COPY_OUT_SYSTEM)/bin/arm64)
+endif
 
 
 # Case 8783, Removing this feature from default feature set, if this is present, sound is broken in com.tencent.tmgp.dragonnest
