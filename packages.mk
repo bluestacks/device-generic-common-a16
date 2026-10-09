@@ -81,10 +81,14 @@ PRODUCT_PACKAGES += \
 
 # Stagefright FFMPEG plugins
 PRODUCT_PACKAGES += \
-    i965_drv_video \
     libffmpeg_extractor \
     libffmpeg_omx \
     media_codecs_ffmpeg.xml
+
+# BS-A16: Intel VAAPI driver is x86-only.
+ifneq ($(filter x86 x86_64,$(TARGET_ARCH)),)
+PRODUCT_PACKAGES += i965_drv_video
+endif
 
 # BS-A16: Use com.uncube.launcher3 as default home app.
 # Remove AOSP Launcher3 to avoid HOME activity conflict on first boot.
