@@ -46,7 +46,6 @@ PRODUCT_PACKAGES := \
     ssh \
     sshd \
     su \
-    v86d \
     xmllint \
     pagefusion
 
@@ -88,6 +87,11 @@ PRODUCT_PACKAGES += \
 # BS-A16: Intel VAAPI driver is x86-only.
 ifneq ($(filter x86 x86_64,$(TARGET_ARCH)),)
 PRODUCT_PACKAGES += i965_drv_video
+endif
+
+# BS-A16: v86d (in-guest x86 real-mode emulation) is x86-only.
+ifneq ($(filter x86 x86_64,$(TARGET_ARCH)),)
+PRODUCT_PACKAGES += v86d
 endif
 
 # BS-A16: Use com.uncube.launcher3 as default home app.
