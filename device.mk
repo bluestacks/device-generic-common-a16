@@ -66,6 +66,15 @@ endif
 # ships (the A16 port trimmed them). Finsky computes Play device
 # compatibility from this list; without touchscreen/portrait/telephony/
 # sensors every app shows as incompatible on the store.
+# BS-A16-MAC: system/xbin/busybox has to match the guest ABI. android_arm64
+# ships the aarch64 binary; every other product, including android_x86_64,
+# keeps the existing x86_64 busybox.
+ifeq ($(TARGET_PRODUCT),android_arm64)
+BST_BUSYBOX := $(LOCAL_PATH)/busybox-arm64
+else
+BST_BUSYBOX := $(LOCAL_PATH)/busybox
+endif
+
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/ppp/ip-up:system/etc/ppp/ip-up \
     $(LOCAL_PATH)/ppp/ip-down:system/etc/ppp/ip-down \
@@ -73,7 +82,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/media_codecs.xml:system/etc/media_codecs.xml \
     $(LOCAL_PATH)/media_profiles.xml:system/etc/media_profiles.xml \
     $(LOCAL_PATH)/google.xml:system/etc/sysconfig/google.xml \
-    $(LOCAL_PATH)/busybox:system/xbin/busybox \
+    $(BST_BUSYBOX):system/xbin/busybox \
     device/sample/etc/apns-full-conf.xml:system/etc/apns-conf.xml \
     device/sample/etc/old-apns-conf.xml:system/etc/old-apns-conf.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
