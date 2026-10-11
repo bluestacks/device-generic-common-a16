@@ -21,6 +21,16 @@ KERNEL_MAKE_ARCH := x86
 KERNEL_TARGET := bzImage
 TARGET_KERNEL_CONFIG ?= bst-$(TARGET_KERNEL_ARCH)_defconfig
 KERNEL_CONFIG_DIR := arch/x86/configs
+KERNEL_CROSS_TRIPLE := x86_64-linux-gnu-
+else ifeq ($(TARGET_ARCH),arm64)
+# BS-A16-MAC: Mac(polar_mac/HVF) arm64 guest；Image 在 arch/arm64/boot/。
+# bst-arm64_defconfig 从 A13-mac kernel-mac(5.15) 迁移到 6.12（W3 维护）。
+TARGET_KERNEL_ARCH ?= arm64
+KERNEL_MAKE_ARCH := arm64
+KERNEL_TARGET := Image
+TARGET_KERNEL_CONFIG ?= bst-arm64_defconfig
+KERNEL_CONFIG_DIR := arch/arm64/configs
+KERNEL_CROSS_TRIPLE := aarch64-linux-gnu-
 endif
 
 KTOOLS := prebuilts/ktools
@@ -43,7 +53,7 @@ KERNEL_BUILD_PATH := $(abspath $(KERNEL_RUST_PREBUILT)/bin):$(abspath $(KERNEL_B
 KERNEL_CLANG_CLAGS := $(KERNEL_HOST_FLAGS)
 ifeq ($(BUILD_KERNEL_WITH_CLANG),true)
 $(info "build kernel with clang")
-KERNEL_CLANG_CLAGS += CC=$(abspath $(LLVM_PREBUILTS_PATH)/clang) LD=$(abspath $(LLVM_PREBUILTS_PATH)/ld.lld) CLANG_TRIPLE=x86_64-linux-gnu-
+KERNEL_CLANG_CLAGS += CC=$(abspath $(LLVM_PREBUILTS_PATH)/clang) LD=$(abspath $(LLVM_PREBUILTS_PATH)/ld.lld) CLANG_TRIPLE=$(KERNEL_CROSS_TRIPLE)
 endif
 
 BST_BUILD_JOBS ?= 8
@@ -122,7 +132,7 @@ $(BUILT_KERNEL_TARGET): $(KERNEL_DOTCONFIG_FILE) $(KERNEL_SOURCE_STAMP)
 	$(hide) mkdir -p $(OUT_DIR)/.path; ln -sf ../../$(LLVM_PREBUILTS_PATH)/llvm-ar $(OUT_DIR)/.path/ar; ln -sf ../../$(LLVM_PREBUILTS_PATH)/ld.lld $(OUT_DIR)/.path/ld
 ifeq ($(BUILD_KERNEL_WITH_CLANG),true)
 	$(info TARGET_TOOLS_PREFIX=$(TARGET_TOOLS_PREFIX))
-	cd $(OUT_DIR)/.path; ln -sf ../../$(dir $(TARGET_TOOLS_PREFIX))x86_64-linux-androidkernel-* .; ln -sf x86_64-linux-androidkernel-as x86_64-linux-gnu-as
+	cd $(OUT_DIR)/.path; ln -sf ../../$(dir $(TARGET_TOOLS_PREFIX))$(TARGET_ARCH)-linux-androidkernel-* .; ln -sf $(TARGET_ARCH)-linux-androidkernel-as $(KERNEL_CROSS_TRIPLE)as
 endif
 
 	$(mk_kernel) olddefconfig

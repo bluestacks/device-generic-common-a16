@@ -45,8 +45,11 @@ PRODUCT_COPY_FILES := \
     $(if $(wildcard $(PRODUCT_DIR)init.$(TARGET_PRODUCT).rc),$(PRODUCT_DIR)init.$(TARGET_PRODUCT).rc,$(LOCAL_PATH)/init.x86.rc):root/init.baklava.rc \
     $(if $(wildcard $(PRODUCT_DIR)ueventd.$(TARGET_PRODUCT).rc),$(PRODUCT_DIR)ueventd.$(TARGET_PRODUCT).rc,$(LOCAL_PATH)/ueventd.x86.rc):root/ueventd.baklava.rc
 
-# BS-A16: ndk_translation blobs are x86-only (arm64 guests run arm apps natively).
-ifeq ($(filter x86 x86_64,$(TARGET_ARCH)),)
+# BS-A16-MAC: the ndk_translation/berberis native-bridge payload only applies
+# to the x86 host; the Mac (polar_mac) arm64 guest executes arm code natively
+# and must not ship libndk/libhoudini bits. (TARGET_ARCH is not set during
+# product-config parsing - gate on TARGET_PRODUCT.)
+ifneq ($(TARGET_PRODUCT),android_arm64)
 PRODUCT_COPY_FILES += \
     $(call find-copy-subdir-files,*,device/generic/common/libndk_baklava64/lib64/arm64,$(TARGET_COPY_OUT_SYSTEM)/lib64/arm64_ndk) \
     $(call find-copy-subdir-files,libndk_translation*,device/generic/common/libndk_baklava64/lib64,$(TARGET_COPY_OUT_SYSTEM)/lib64) \
