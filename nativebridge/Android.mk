@@ -9,6 +9,10 @@
 
 LOCAL_PATH := $(my-dir)
 
+# BS-A16: the native bridge glue is x86-only (arm64 guests run arm apps
+# natively and libnb.cpp uses x86 cpuid/asm).
+ifneq ($(filter x86 x86_64,$(TARGET_ARCH)),)
+
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := libnb
@@ -24,3 +28,5 @@ LOCAL_C_INCLUDES := \
 LOCAL_MULTILIB := both
 
 include $(BUILD_SHARED_LIBRARY)
+
+endif  # x86-only native bridge

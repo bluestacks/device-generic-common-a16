@@ -34,7 +34,6 @@ PRODUCT_PACKAGES := \
     eject \
     gps.default \
     gps.huawei \
-    hwcomposer.x86 \
     icu.dat \
     io_switch \
     libGLES_android \
@@ -46,9 +45,18 @@ PRODUCT_PACKAGES := \
     ssh \
     sshd \
     su \
-    v86d \
     xmllint \
     pagefusion
+
+# BS-A16-MAC: v86d (uvesafb x86 helper) and the legacy hwcomposer.x86 list
+# entry are x86-only; the Mac arm64 guest uses the goldfish EmuHWC2 stack
+# (hwcomposer.ranchu from goldfish-opengl-mac). TARGET_ARCH is not set during
+# product-config parsing - gate on TARGET_PRODUCT instead.
+ifneq ($(TARGET_PRODUCT),android_arm64)
+PRODUCT_PACKAGES += \
+    hwcomposer.x86 \
+    v86d
+endif
 
 PRODUCT_PACKAGES += \
     libwpa_client \
@@ -80,8 +88,12 @@ PRODUCT_PACKAGES += \
     hcitool \
 
 # Stagefright FFMPEG plugins
+# BS-A16-MAC: i965_drv_video is the Intel VA-API ffmpeg plugin (x86-only;
+# it has no arm64 module rules, ninja fails with "no known rule").
+ifneq ($(TARGET_PRODUCT),android_arm64)
+PRODUCT_PACKAGES += i965_drv_video
+endif
 PRODUCT_PACKAGES += \
-    i965_drv_video \
     libffmpeg_extractor \
     libffmpeg_omx \
     media_codecs_ffmpeg.xml
