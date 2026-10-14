@@ -57,7 +57,9 @@ static const bool g_enable_logv = false;
 
 // The maximum size of contiguous executable memory starting from load address of libhoudini.so
 // Notice: Houdini also makes read-only data executable.
-enum { esize_1301_z = 0x857E58 };
+// esize_1301_z    : houdini 13.0.1 z build (Android 13 payload)
+// esize_1600_com2 : houdini 16.0.0.bluestacks_com2.0 (Android 16 payload)
+enum { esize_1301_z = 0x857E58, esize_1600_com2 = 0x772E2C };
 
 // Quickly get the esize_xxx value of libhoudini.so, it may not work in future.
 static inline unsigned get_houdini_esize(const unsigned char* base)
@@ -433,6 +435,42 @@ static inline void patch_houdini_1301_z(const unsigned char* base)
 }
 #endif
 
+#ifdef __LP64__  // Houdini patch: AMD crash in sub_4F4B30 (16.0.0.bluestacks_com2.0)
+// The translator dispatch enters sub_4F4B30 (process-name "_zygote" check) with
+// RSP % 16 == 0 on AMD hosts, while the x86-64 ABI requires 8 at a function
+// entry. Its prologue zeroes a 0x100 stack buffer with 16 aligned movaps stores
+// and the first one (.text:0x4F4B58) raises #GP, surfacing as SIGSEGV
+// (SI_KERNEL, fault addr 0) right after the ARM register dump. Free Fire /
+// FF MAX (libanort.so SecNeo JNI_OnLoad) hit it deterministically; the Intel
+// dispatch keeps the ABI alignment and never faults. Relax the stores to
+// movups: identical zeroing, no alignment requirement, safe on both vendors.
+static constexpr unsigned movaps_stores_1600_com2[] = {
+    0x4F4B58, 0x4F4B60, 0x4F4B68, 0x4F4B70, 0x4F4B78, 0x4F4B80, 0x4F4B88, 0x4F4B90,
+    0x4F4B98, 0x4F4B9D, 0x4F4BA2, 0x4F4BA7, 0x4F4BAC, 0x4F4BB1, 0x4F4BB6, 0x4F4BBB,
+};
+
+template<unsigned esize>
+static inline void patch_houdini_1600_com2(const unsigned char* base)
+{
+    // Non-Intel hosts only (AMD/Hygon/Zhaoxin): the Intel dispatch keeps the
+    // ABI stack alignment so the rewrite is a no-op there - keep the Intel
+    // .text pristine instead.
+    if (is_intel_cpu()) return;
+
+    MemCode mem(base, esize);
+    if (!mem.make_writable()) return;
+
+    // .text:0x4F4B58..0x4F4BBF in sub_4F4B30: 16x 0F 29 (movaps [rsp+X], xmm0)
+    // => 0F 11 (movups [rsp+X], xmm0). All-or-nothing: patch_all_values verifies
+    // every site before writing any, so a same-esize but different build can
+    // never end up half-patched.
+    if (!Patcher(base).patch_all_values<16>(movaps_stores_1600_com2,
+            uint16_t(0x290F), uint16_t(0x110F))) {
+        ALOGW("houdini 16.0.0.com2: movaps fix skipped, pattern mismatch (different build?)");
+    }
+}
+#endif
+
 static inline void patch_houdini(const unsigned char* base)
 {
     if (base == nullptr) return;
@@ -442,7 +480,8 @@ static inline void patch_houdini(const unsigned char* base)
 
     switch (esize) {
 #ifdef __LP64__
-        case esize_1301_z: patch_houdini_1301_z<esize_1301_z>(base); break;
+        case esize_1301_z:    patch_houdini_1301_z<esize_1301_z>(base); break;
+        case esize_1600_com2: patch_houdini_1600_com2<esize_1600_com2>(base); break;
 #else
 #endif
         default: break;
